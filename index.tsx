@@ -41,7 +41,7 @@ export default definePlugin({
                 }	
             ],
             execute: async (opts, ctx) => {
-                const input = opts.find(opt => opt.name === "text")?.value;
+                const input = opts.find(opt => opt.name === "message")?.value;
 	
                 const spoofed = spoofUnicode(input);
 
