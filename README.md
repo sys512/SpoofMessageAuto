@@ -6,7 +6,7 @@
 
 You type:
 
-<img width="450" height="100" alt="image" src="https://github.com/user-attachments/assets/43d700b2-a61e-400c-9ea1-ead521513cf2" />
+<img width="400" height="100" alt="image" src="https://github.com/user-attachments/assets/15d6e84a-59ca-4a5f-acfc-ca64ae1f6e57" />
 
 
 It sends:
