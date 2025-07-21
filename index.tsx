@@ -34,8 +34,8 @@ export default definePlugin({
             description: "Replaces latin characters with indistinguishable homoglyphs.",
             options: [
                 {
-                    name: "text",
-                    description: "Replaces latin characters with indistinguishable homoglyphs.",
+                    name: "message",
+                    description: "Your message",
                     type: ApplicationCommandOptionType.STRING,
                     required: true
                 }	
