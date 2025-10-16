@@ -5,10 +5,8 @@
  */
 
 import definePlugin from "@utils/types";
-import { sendBotMessage } from "@api/Commands";
-import { ApplicationCommandInputType, ApplicationCommandOptionType } from "@api/Commands";
 import { Devs } from "@utils/constants";
-import { sendMessage } from "@utils/discord";
+import { addMessagePreSendListener, removeMessagePreSendListener } from "@api/MessageEvents";
 
 // map pasted from https://onlinetools.com/unicode/spoof-unicode-text
 const spoofMap: Record<string, string> = {
@@ -19,36 +17,31 @@ const spoofMap: Record<string, string> = {
 };
 
 function spoofUnicode(text: string): string {
-    return [...text].map(char => spoofMap[char] || char).join('');
+    const result = [...text].map(char => {
+        const replacement = spoofMap[char];
+        return replacement || char;
+    }).join('');
+    return result;
 }
 
-export default definePlugin({
+interface SpoofMessagePlugin {
+    listener?: (channelId: string, message: { content: string | null }) => void;
+}
+
+export default definePlugin<SpoofMessagePlugin>({
     name: "SpoofMessage",
-    description: "Bypass content filtering in servers with message spoofing (replaces latin characters with Unicode homoglyphs)",
-    authors: [{ name: "skidaim", id: "1043358658504962138" }],
+    description: "Automatically bypass content filtering in servers by replacing latin characters with Unicode homoglyphs in every message",
+    authors: [{ name: "skidaim", id: BigInt("1043358658504962138") }, { name: "Trident", id: BigInt("1236937728487198772") }],
 
-    commands: [
-        {
-            inputType: ApplicationCommandInputType.BUILT_IN,
-            name: "spoof",
-            description: "Replaces latin characters with indistinguishable homoglyphs.",
-            options: [
-                {
-                    name: "message",
-                    description: "Your message",
-                    type: ApplicationCommandOptionType.STRING,
-                    required: true
-                }	
-            ],
-            execute: async (opts, ctx) => {
-                const input = opts.find(opt => opt.name === "message")?.value;
-	
-                const spoofed = spoofUnicode(input);
+    start() {
+        this.listener = (_: string, message: { content: string | null }) => {
+            if (!message?.content) return;
+            message.content = spoofUnicode(message.content);
+        };
+        addMessagePreSendListener(this.listener);
+    },
 
-                sendMessage(ctx.channel.id, {
-                    content: spoofed
-                });
-            }
-        }
-    ]
+    stop() {
+        if (this.listener) removeMessagePreSendListener(this.listener);
+    }
 });
